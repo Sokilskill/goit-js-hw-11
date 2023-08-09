@@ -2,6 +2,7 @@ import NewsApiService from './api';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css'; // Додатковий імпорт стилів
+import scrollToTop from './scroll-to-top';
 
 const newsApiService = new NewsApiService(); //Класс з методами
 
@@ -103,7 +104,6 @@ async function fetchLoadMore() {
     console.log(error);
   }
 }
-
 
 function hiddenEl(element) {
   element.classList.add('is-hidden');

@@ -19,7 +19,7 @@ body {
   padding: 5px;
 }
 
-button {
+.btn {
   cursor: pointer;
   border: none;
   color: rgb(50, 12, 94);
@@ -34,7 +34,7 @@ button {
     color 250ms var(--cubic-bezier), box-shadow 250ms var(--cubic-bezier);
 }
 
-button:is(:hover) {
+.btn:is(:hover) {
   box-shadow: 0px 0px 223px rgba(0, 0, 0, 0.05);
   background-color: rgb(0, 33, 217);
   color: rgb(0, 255, 128);

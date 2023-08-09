@@ -95,6 +95,7 @@ async function fetchLoadMore() {
     //   data.hits.length, 'page: ', newsApiService.page,
     //   'total: ',  score
     // );
+    smoothPageScrolling();
 
     if (score >= data.totalHits) {
       return hiddenEl(btnLoadMoreEl);
@@ -111,4 +112,14 @@ function hiddenEl(element) {
 
 function showEl(element) {
   element.classList.remove('is-hidden');
+}
+
+function smoothPageScrolling() {
+  const { height: cardHeight } = document
+    .querySelector('.gallery')
+    .firstElementChild.getBoundingClientRect();
+
+  window.scrollBy({
+    top: cardHeight * 2,
+  });
 }

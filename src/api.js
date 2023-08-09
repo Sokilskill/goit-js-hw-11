@@ -10,17 +10,11 @@ export default class NewsApiService {
     this.perPage = 40;
   }
 
-  fetchSearch() {
-    console.log(this.searchQuery);
-    console.log(this.page);
-
-    return axios
-      .get(
-        `${BASE_URL}?key=${API_KEY}&q=${this.searchQuery}&orientation=horizontal&safesearch=true&per_page=${this.perPage}&page=${this.page}`
-      )
-      .then(response => {
-        return response.data;
-      });
+  async fetchSearch() {
+    const response = await axios.get(
+      `${BASE_URL}?key=${API_KEY}&q=${this.searchQuery}&orientation=horizontal&safesearch=true&per_page=${this.perPage}&page=${this.page}`
+    );
+    return await response.data;
   }
 
   resetPageToDefault() {

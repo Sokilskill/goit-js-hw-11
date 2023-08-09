@@ -3,7 +3,7 @@ import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css'; // Додатковий імпорт стилів
 
-const newsApiService = new NewsApiService(); //Класс з методами для запроса
+const newsApiService = new NewsApiService(); //Класс з методами
 
 const formEl = document.querySelector('.search-form');
 const galleryEl = document.querySelector('.gallery');
@@ -14,7 +14,7 @@ let score = perPage;
 
 formEl.addEventListener('submit', handlerSubmitForm);
 
-function handlerSubmitForm(ev) {
+async function handlerSubmitForm(ev) {
   ev.preventDefault();
   galleryEl.innerHTML = '';
   hiddenEl(btnLoadMoreEl);
@@ -23,33 +23,27 @@ function handlerSubmitForm(ev) {
   newsApiService.query = ev.currentTarget.searchQuery.value;
   newsApiService.resetPageToDefault();
 
-  newsApiService
-    .fetchSearch()
-    .then(data => {
-      if (parseInt(data.totalHits) <= 0) {
-        throw new Error(
-          'Sorry, there are no images matching your search query. Please try again.'
-        );
-      }
+  try {
+    const data = await newsApiService.fetchSearch();
+    if (parseInt(data.totalHits) <= 0) {
+      throw new Error(
+        'Sorry, there are no images matching your search query. Please try again.'
+      );
+    }
 
-      console.log('data: ', data);
-      // console.log('data.hits: ', data.hits);
-      Notify.success(`Hooray! We found ${data.totalHits} images.`);
-      createRenderMarkup(data.hits);
-      if (data.totalHits > perPage) showEl(btnLoadMoreEl);
-    })
-    .catch(error => {
-      Notify.failure(`${error}`);
-      console.log(error);
-    });
-
-  console.log(newsApiService);
-
-  ev.currentTarget.reset();
+    Notify.success(`Hooray! We found ${data.totalHits} images.`);
+    createRenderMarkup(data.hits);
+    if (data.totalHits > perPage) showEl(btnLoadMoreEl);
+  } catch (error) {
+    Notify.failure(`${error}`);
+    console.log(error);
+  }
+  formEl.reset();
 }
+
 function createRenderMarkup(arr) {
   createMarkup(arr);
-  simplelightbox();
+  lightbox();
 }
 
 function createMarkup(arr) {
@@ -76,48 +70,40 @@ function createMarkup(arr) {
   );
 }
 
-function simplelightbox() {
-  new SimpleLightbox('.gallery a', {
+function lightbox() {
+  const lightbox = new SimpleLightbox('.gallery a', {
     captionsData: 'alt',
     captionDelay: 250,
     overlayOpacity: 0.93,
     swipeTolerance: 400,
     // showCounter: false,
   });
+  lightbox.refresh();
 }
 
-btnLoadMoreEl.addEventListener('click', hendlerBtnLoadMore);
+btnLoadMoreEl.addEventListener('click', fetchLoadMore);
 
-function hendlerBtnLoadMore() {
-  fetchLoadMore();
-}
-
-function fetchLoadMore() {
+async function fetchLoadMore() {
   newsApiService.incrementPage();
-  newsApiService
-    .fetchSearch()
-    .then(data => {
-      createRenderMarkup(data.hits);
-      score += data.hits.length;
+  const data = await newsApiService.fetchSearch();
+  try {
+    createRenderMarkup(data.hits);
+    score += data.hits.length;
 
-      console.log(
-        'data.hits: ',
-        data.hits.length,
-        'page: ',
-        newsApiService.page,
-        'total: ',
-        score
-      );
+    // console.log(  'data.hits: ',
+    //   data.hits.length, 'page: ', newsApiService.page,
+    //   'total: ',  score
+    // );
 
-      if (score === data.totalHits) {
-        return hiddenEl(btnLoadMoreEl);
-      }
-    })
-    .catch(error => {
-      Notify.failure(`${error}`);
-      console.log(error);
-    });
+    if (score >= data.totalHits) {
+      return hiddenEl(btnLoadMoreEl);
+    }
+  } catch (error) {
+    Notify.failure(`${error}`);
+    console.log(error);
+  }
 }
+
 
 function hiddenEl(element) {
   element.classList.add('is-hidden');

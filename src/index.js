@@ -44,7 +44,7 @@ async function handlerSubmitForm(ev) {
 
 function createRenderMarkup(arr) {
   createMarkup(arr);
-  lightbox();
+  lightbox.refresh();
 }
 
 function createMarkup(arr) {
@@ -71,16 +71,13 @@ function createMarkup(arr) {
   );
 }
 
-function lightbox() {
-  const lightbox = new SimpleLightbox('.gallery a', {
-    captionsData: 'alt',
-    captionDelay: 250,
-    overlayOpacity: 0.93,
-    swipeTolerance: 400,
-    // showCounter: false,
-  });
-  lightbox.refresh();
-}
+const lightbox = new SimpleLightbox('.gallery a', {
+  captionsData: 'alt',
+  captionDelay: 250,
+  overlayOpacity: 0.93,
+  swipeTolerance: 400,
+  // showCounter: false,
+});
 
 btnLoadMoreEl.addEventListener('click', fetchLoadMore);
 
@@ -115,6 +112,7 @@ function showEl(element) {
   element.classList.remove('is-hidden');
 }
 
+//Плавна прокрутка після завантаження нових зображень
 function smoothPageScrolling() {
   const { height: cardHeight } = document
     .querySelector('.gallery')
